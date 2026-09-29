@@ -27,25 +27,31 @@
 }
 
 body {
-  width: 370px;
+  width: 375px;
   background-color: var(--bg-base);
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 13px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 .agent-shell {
   display: flex;
   flex-direction: column;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-base);
 }
 
-/* 1. Header */
+/* 1. Header with Rounded Aesthetic */
 .agent-header {
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border-subtle);
-  padding: 12px 16px;
+  padding: 14px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -54,23 +60,24 @@ body {
 .agent-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .brand-isro-logo {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   object-fit: contain;
-  border-radius: 6px;
+  border-radius: 10px;
   background: #ffffff;
   padding: 3px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
   flex-shrink: 0;
 }
 
 .brand-text {
   display: flex;
   flex-direction: column;
+  gap: 1px;
 }
 
 .brand-name {
@@ -89,8 +96,8 @@ body {
   font-family: var(--font-mono);
   background: rgba(251, 146, 60, 0.15);
   color: var(--isro-orange);
-  padding: 1px 5px;
-  border-radius: 4px;
+  padding: 2px 6px;
+  border-radius: 6px;
 }
 
 .brand-desc {
@@ -101,11 +108,11 @@ body {
 .agent-status-badge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   background: rgba(16, 185, 129, 0.1);
   border: 1px solid rgba(16, 185, 129, 0.3);
-  padding: 3px 8px;
-  border-radius: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
   font-size: 10px;
   font-weight: 700;
   font-family: var(--font-mono);
@@ -121,11 +128,13 @@ body {
   box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
 }
 
-/* 2. Hardware Specs Strip */
+/* 2. Rounded Hardware Specs Strip */
 .hardware-strip {
   background: var(--bg-elevated);
-  border-bottom: 1px solid var(--border-subtle);
-  padding: 8px 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  margin: 12px 16px 0;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -162,7 +171,7 @@ body {
   background: var(--border-subtle);
 }
 
-/* 3. Controls Body */
+/* 3. Controls Body with Rounded Forms */
 .agent-content {
   padding: 14px 16px;
   display: flex;
@@ -198,8 +207,8 @@ body {
   width: 100%;
   background: var(--bg-input);
   border: 1px solid var(--border-strong);
-  border-radius: 6px;
-  padding: 8px 10px;
+  border-radius: 10px;
+  padding: 8px 12px;
   font-size: 12px;
   color: var(--text-primary);
   outline: none;
@@ -216,13 +225,13 @@ body {
   width: 100%;
   background: var(--bg-input);
   border: 1px solid var(--border-strong);
-  border-radius: 6px;
-  padding: 8px 10px;
+  border-radius: 10px;
+  padding: 9px 12px;
   font-size: 12px;
   color: var(--text-primary);
   font-family: var(--font-sans);
   resize: vertical;
-  min-height: 48px;
+  min-height: 52px;
   outline: none;
   line-height: 1.4;
   transition: all 0.15s ease;
@@ -233,11 +242,11 @@ body {
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-/* 4. Action Buttons */
+/* 4. Action Buttons with Rounded Curves */
 .action-grid {
   display: grid;
   grid-template-columns: 1fr 1.3fr;
-  gap: 8px;
+  gap: 10px;
 }
 
 .btn {
@@ -245,8 +254,8 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 9px 12px;
-  border-radius: 6px;
+  padding: 10px 14px;
+  border-radius: 12px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -257,7 +266,7 @@ body {
 .btn-glow {
   background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
   color: #ffffff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .btn-glow:hover {
@@ -276,18 +285,18 @@ body {
   border-color: rgba(255, 255, 255, 0.25);
 }
 
-/* 5. Terminal Console */
+/* 5. Terminal Console with Rounded Corners */
 .terminal-shell {
   background: #070a10;
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
 }
 
 .terminal-header {
   background: #0e1420;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 6px 10px;
+  padding: 7px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -322,21 +331,21 @@ body {
   font-family: var(--font-mono);
   background: rgba(255, 255, 255, 0.06);
   color: var(--text-secondary);
-  padding: 1px 5px;
-  border-radius: 3px;
+  padding: 2px 6px;
+  border-radius: 6px;
 }
 
 .terminal-body {
-  padding: 8px 10px;
+  padding: 10px 12px;
   font-family: var(--font-mono);
   font-size: 11px;
   line-height: 1.5;
-  min-height: 56px;
-  max-height: 110px;
+  min-height: 60px;
+  max-height: 115px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .log-row {
@@ -365,11 +374,11 @@ body {
   color: #f87171;
 }
 
-/* 6. Footer */
+/* 6. Rounded Footer */
 .agent-footer {
   background: var(--bg-surface);
   border-top: 1px solid var(--border-subtle);
-  padding: 6px 14px;
+  padding: 8px 14px;
   display: flex;
   align-items: center;
   justify-content: center;

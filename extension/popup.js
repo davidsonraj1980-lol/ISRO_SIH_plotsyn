@@ -34,39 +34,91 @@ document.addEventListener('DOMContentLoaded', () => {
     telemetryLog.scrollTop = telemetryLog.scrollHeight;
   }
 
-  // Ensure content script is available in the target tab
-  async function resolveTargetTab() {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (!tab?.id) {
-      addLog('No active browser tab found.', 'error');
-      return null;
+  function isScriptableUrl(url) {
+    if (!url) return false;
+    const lower = url.toLowerCase();
+    if (
+      lower.startsWith('chrome://') ||
+      lower.startsWith('chrome-extension://') ||
+      lower.startsWith('edge://') ||
+      lower.startsWith('about:') ||
+      lower.includes('chromewebstore.google.com') ||
+      lower.includes('chrome.google.com/webstore')
+    ) {
+      return false;
     }
+    return lower.startsWith('http://') || lower.startsWith('https://') || lower.startsWith('file://');
+  }
 
-    const url = tab.url || '';
-    if (url.startsWith('chrome://') || url.startsWith('chrome-extension://') || url.startsWith('edge://') || url.startsWith('about:')) {
-      addLog('Browser restriction: Extensions cannot run on internal system pages. Switch to an active webpage (e.g. http://localhost:5174/).', 'warn');
-      return null;
+  // Programmatically inject content script if not already present
+  async function injectContentScript(tabId) {
+    return new Promise((resolve) => {
+      chrome.scripting.executeScript(
+        {
+          target: { tabId },
+          files: ['content.js']
+        },
+        () => {
+          if (chrome.runtime.lastError) {
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+        }
+      );
+    });
+  }
+
+  // Ensure content script is available in a valid target tab
+  async function resolveTargetTab() {
+    let [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+    // If active tab is non-scriptable (e.g. chrome://extensions or Web Store)
+    if (!activeTab || !isScriptableUrl(activeTab.url)) {
+      addLog('Active tab is a Chrome internal/webstore page where scripting is restricted.', 'warn');
+      
+      // Auto-search for an open webpage or ISRO Mission Portal
+      const allTabs = await chrome.tabs.query({ currentWindow: true });
+      const scriptableTab = allTabs.find(t => isScriptableUrl(t.url));
+
+      if (scriptableTab) {
+        addLog(`Switching to open tab: ${scriptableTab.title || scriptableTab.url}`, 'info');
+        await chrome.tabs.update(scriptableTab.id, { active: true });
+        activeTab = scriptableTab;
+      } else {
+        // No web tab open: launch test portal automatically
+        addLog('Launching ISRO Mission Portal (http://localhost:5174/)...', 'info');
+        const newTab = await chrome.tabs.create({ url: 'http://localhost:5174/' });
+        addLog('Opened ISRO Portal. Re-open Netra to run agent on the portal!', 'success');
+        return null;
+      }
     }
 
     try {
-      await new Promise((resolve, reject) => {
-        chrome.tabs.sendMessage(tab.id, { action: 'PING' }, (res) => {
+      // Test communication with content script
+      const isAlive = await new Promise((resolve) => {
+        chrome.tabs.sendMessage(activeTab.id, { action: 'PING' }, (res) => {
           if (chrome.runtime.lastError || !res) {
-            chrome.scripting.executeScript({
-              target: { tabId: tab.id },
-              files: ['content.js']
-            }, () => {
-              if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
-              else resolve(true);
-            });
+            resolve(false);
           } else {
             resolve(true);
           }
         });
       });
-      return tab;
+
+      if (!isAlive) {
+        // Inject content.js dynamically
+        const injected = await injectContentScript(activeTab.id);
+        if (!injected) {
+          addLog('Could not inject content script into tab.', 'error');
+          return null;
+        }
+        await new Promise((r) => setTimeout(r, 200));
+      }
+
+      return activeTab;
     } catch (e) {
-      addLog('Could not initialize page listener: ' + (e.message || e), 'error');
+      addLog('Tab initialization failed: ' + (e.message || e), 'error');
       return null;
     }
   }
@@ -74,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Scan and Mask PII
   btnScanPii.addEventListener('click', async () => {
     clearLog();
-    addLog('Scanning DOM for sensitive credentials & biometrics...');
+    addLog('Scanning page for sensitive credentials & biometrics...');
     btnScanPii.disabled = true;
 
     const tab = await resolveTargetTab();
