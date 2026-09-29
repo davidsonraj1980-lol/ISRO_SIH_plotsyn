@@ -4,10 +4,10 @@
   --bg-elevated: #1a2233;
   --bg-input: #151d2d;
   --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.15);
+  --border-strong: rgba(255, 255, 255, 0.16);
   
-  --primary-blue: #3b82f6;
-  --primary-blue-hover: #2563eb;
+  --primary-blue: #2563eb;
+  --primary-blue-hover: #1d4ed8;
   --isro-orange: #fb923c;
   --emerald-accent: #10b981;
   --cyan-accent: #38bdf8;
@@ -24,6 +24,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  border-radius: 0 !important;
 }
 
 body {
@@ -34,24 +35,20 @@ body {
   font-size: 13px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
-  border-radius: 16px;
-  overflow: hidden;
 }
 
 .agent-shell {
   display: flex;
   flex-direction: column;
-  border-radius: 16px;
-  overflow: hidden;
   border: 1px solid var(--border-subtle);
   background: var(--bg-base);
 }
 
-/* 1. Header with Rounded Aesthetic */
+/* 1. Header with Sharp Aerospace Aesthetic */
 .agent-header {
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border-subtle);
-  padding: 14px 16px;
+  padding: 13px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -67,11 +64,11 @@ body {
   width: 36px;
   height: 36px;
   object-fit: contain;
-  border-radius: 10px;
   background: #ffffff;
   padding: 3px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
   flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .brand-text {
@@ -86,7 +83,7 @@ body {
   gap: 6px;
   font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   color: #ffffff;
 }
 
@@ -96,8 +93,8 @@ body {
   font-family: var(--font-mono);
   background: rgba(251, 146, 60, 0.15);
   color: var(--isro-orange);
-  padding: 2px 6px;
-  border-radius: 6px;
+  padding: 2px 5px;
+  border: 1px solid rgba(251, 146, 60, 0.3);
 }
 
 .brand-desc {
@@ -111,30 +108,26 @@ body {
   gap: 6px;
   background: rgba(16, 185, 129, 0.1);
   border: 1px solid rgba(16, 185, 129, 0.3);
-  padding: 4px 10px;
-  border-radius: 20px;
+  padding: 3px 8px;
   font-size: 10px;
   font-weight: 700;
   font-family: var(--font-mono);
   color: var(--emerald-accent);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 .status-pulse {
   width: 6px;
   height: 6px;
-  border-radius: 50%;
   background: var(--emerald-accent);
-  box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
+  box-shadow: 0 0 4px rgba(16, 185, 129, 0.8);
 }
 
-/* 2. Rounded Hardware Specs Strip */
+/* 2. Sharp Industrial Hardware Specs Strip */
 .hardware-strip {
   background: var(--bg-elevated);
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  margin: 12px 16px 0;
-  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 9px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -151,7 +144,7 @@ body {
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
 }
 
 .hw-val {
@@ -171,7 +164,7 @@ body {
   background: var(--border-subtle);
 }
 
-/* 3. Controls Body with Rounded Forms */
+/* 3. Controls Body with Sharp Precision */
 .agent-content {
   padding: 14px 16px;
   display: flex;
@@ -182,7 +175,7 @@ body {
 .control-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .control-header {
@@ -207,26 +200,23 @@ body {
   width: 100%;
   background: var(--bg-input);
   border: 1px solid var(--border-strong);
-  border-radius: 10px;
-  padding: 8px 12px;
+  padding: 8px 10px;
   font-size: 12px;
   color: var(--text-primary);
   outline: none;
-  transition: all 0.15s ease;
+  transition: border-color 0.15s ease;
   cursor: pointer;
 }
 
 .agent-select:focus {
   border-color: var(--primary-blue);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
 .agent-textarea {
   width: 100%;
   background: var(--bg-input);
   border: 1px solid var(--border-strong);
-  border-radius: 10px;
-  padding: 9px 12px;
+  padding: 8px 10px;
   font-size: 12px;
   color: var(--text-primary);
   font-family: var(--font-sans);
@@ -234,19 +224,18 @@ body {
   min-height: 52px;
   outline: none;
   line-height: 1.4;
-  transition: all 0.15s ease;
+  transition: border-color 0.15s ease;
 }
 
 .agent-textarea:focus {
   border-color: var(--primary-blue);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-/* 4. Action Buttons with Rounded Curves */
+/* 4. Sharp Action Buttons */
 .action-grid {
   display: grid;
   grid-template-columns: 1fr 1.3fr;
-  gap: 10px;
+  gap: 8px;
 }
 
 .btn {
@@ -255,23 +244,22 @@ body {
   justify-content: center;
   gap: 6px;
   padding: 10px 14px;
-  border-radius: 12px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   border: none;
   transition: all 0.15s ease;
+  letter-spacing: 0.02em;
 }
 
 .btn-glow {
-  background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+  background: var(--primary-blue);
   color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border: 1px solid #1d4ed8;
 }
 
 .btn-glow:hover {
-  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
-  transform: translateY(-1px);
+  background: var(--primary-blue-hover);
 }
 
 .btn-glass {
@@ -282,21 +270,19 @@ body {
 
 .btn-glass:hover {
   background: var(--bg-elevated);
-  border-color: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
-/* 5. Terminal Console with Rounded Corners */
+/* 5. Sharp Console Terminal */
 .terminal-shell {
   background: #070a10;
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  overflow: hidden;
 }
 
 .terminal-header {
   background: #0e1420;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 7px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 6px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -305,25 +291,24 @@ body {
 .terminal-dots {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
 }
 
 .dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
+  width: 6px;
+  height: 6px;
 }
 
-.dot-r { background: #ff5f56; }
-.dot-y { background: #ffbd2e; }
-.dot-g { background: #27c93f; }
+.dot-r { background: #ef4444; }
+.dot-y { background: #f59e0b; }
+.dot-g { background: #10b981; }
 
 .terminal-title {
   font-size: 9px;
   font-weight: 700;
   font-family: var(--font-mono);
   color: var(--text-muted);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 .terminal-badge {
@@ -332,7 +317,7 @@ body {
   background: rgba(255, 255, 255, 0.06);
   color: var(--text-secondary);
   padding: 2px 6px;
-  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .terminal-body {
@@ -374,11 +359,11 @@ body {
   color: #f87171;
 }
 
-/* 6. Rounded Footer */
+/* 6. Sharp Footer */
 .agent-footer {
   background: var(--bg-surface);
   border-top: 1px solid var(--border-subtle);
-  padding: 8px 14px;
+  padding: 7px 14px;
   display: flex;
   align-items: center;
   justify-content: center;
