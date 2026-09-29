@@ -7,96 +7,121 @@
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <div class="extension-container">
-    <!-- Top Government Strip -->
-    <div class="gov-mini-strip">
-      <span>भारत सरकार • Department of Space, Government of India</span>
-      <span class="ps-badge">PS #26171</span>
-    </div>
-
-    <!-- Official Header -->
-    <header class="ext-header">
-      <div class="brand-row">
-        <img src="isro-logo.svg" alt="ISRO Emblem" class="isro-logo-icon">
-        <div class="title-column">
-          <span class="hindi-text">भारतीय अंतरिक्ष अनुसंधान संगठन</span>
-          <span class="main-title">ISRO Netra-Vision</span>
-          <span class="dept-text">On-Device Privacy Vision Agent</span>
+  <div class="agent-shell">
+    <!-- Top Identity Bar -->
+    <header class="agent-header">
+      <div class="agent-brand">
+        <div class="brand-crest">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="m4.93 4.93 4.24 4.24"/>
+            <path d="m14.83 9.17 4.24-4.24"/>
+            <path d="m14.83 14.83 4.24 4.24"/>
+            <path d="m9.17 14.83-4.24 4.24"/>
+            <circle cx="12" cy="12" r="4"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-name">
+            <span>NETRA</span>
+            <span class="brand-tag">ISRO PS-26171</span>
+          </div>
+          <div class="brand-desc">On-Device Visual Privacy Agent</div>
         </div>
       </div>
-      <div class="status-pill">
-        <span class="status-dot"></span>
-        <span id="shield-status-text">WebGPU Ready</span>
+      <div class="agent-status-badge">
+        <span class="status-pulse"></span>
+        <span id="agent-state-label">ARMED</span>
       </div>
     </header>
 
-    <!-- Privacy & Benchmark Assurance -->
-    <section class="metrics-grid">
-      <div class="metric-card">
-        <span class="metric-label">Inference Engine</span>
-        <span class="metric-val">WebGPU / WASM</span>
+    <!-- Telemetry Hardware Specs -->
+    <div class="hardware-strip">
+      <div class="hw-item">
+        <span class="hw-label">Vision Backbone</span>
+        <span class="hw-val">WebGPU • YOLOS</span>
       </div>
-      <div class="metric-card">
-        <span class="metric-label">Client Leak Guarantee</span>
-        <span class="metric-val text-green">0% Plain-text Leak</span>
+      <div class="hw-divider"></div>
+      <div class="hw-item">
+        <span class="hw-label">Zero-Leak Guard</span>
+        <span class="hw-val text-emerald">0.00% Exfiltration</span>
       </div>
-    </section>
+    </div>
 
-    <!-- Controls -->
-    <main class="ext-body">
-      <!-- Filter Selector -->
-      <div class="form-group">
-        <label for="redaction-mode" class="input-label">On-device redaction filter</label>
-        <select id="redaction-mode" class="ext-select">
-          <option value="blackout">Solid Blackout (Zero-Leak Default)</option>
-          <option value="gaussian_blur">Gaussian Blur (Local Shader)</option>
-          <option value="pixelate">Pixelation (Mosaic Filter)</option>
-          <option value="synthetic_token">Synthetic Decoy Replacement</option>
-        </select>
+    <!-- Main Content Form -->
+    <div class="agent-content">
+      <!-- Mode Selection -->
+      <div class="control-group">
+        <div class="control-header">
+          <label for="redaction-mode" class="control-label">Canvas Privacy Filter</label>
+          <span class="control-meta">Hardware Shader</span>
+        </div>
+        <div class="select-wrapper">
+          <select id="redaction-mode" class="agent-select">
+            <option value="blackout">Solid Blackout (Zero-Leak Default)</option>
+            <option value="gaussian_blur">Gaussian Blur (Local Shader)</option>
+            <option value="pixelate">20px Mosaic Pixelation</option>
+            <option value="synthetic_token">Synthetic Token Replacement</option>
+          </select>
+        </div>
       </div>
 
-      <!-- Agent Prompt -->
-      <div class="form-group">
-        <label for="agent-goal" class="input-label">Mission agent directive</label>
+      <!-- Agent Mission Directive -->
+      <div class="control-group">
+        <div class="control-header">
+          <label for="agent-goal" class="control-label">Agent Mission Directive</label>
+        </div>
         <textarea 
           id="agent-goal" 
-          class="ext-textarea" 
+          class="agent-textarea" 
           rows="2"
-          placeholder="e.g. Verify credentials and authorize clearance..."
-        >Verify parameters, consent to protocol, and authorize clearance</textarea>
+          placeholder="Enter natural language instruction..."
+        >Verify credentials, acknowledge protocol, and authorize clearance decree</textarea>
       </div>
 
-      <!-- Actions -->
-      <div class="button-row">
-        <button type="button" id="btn-scan-pii" class="btn btn-secondary">
+      <!-- Primary Action Buttons -->
+      <div class="action-grid">
+        <button type="button" id="btn-scan-pii" class="btn btn-glass">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           </svg>
-          <span>Mask Sensitive PII</span>
+          <span>Mask PII</span>
         </button>
-        <button type="button" id="btn-run-agent" class="btn btn-primary">
+        <button type="button" id="btn-run-agent" class="btn btn-glow">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="5 3 19 12 5 21 5 3"/>
           </svg>
-          <span>Run Netra Agent</span>
+          <span>Run Agent</span>
         </button>
       </div>
 
-      <!-- Telemetry Output -->
-      <div class="telemetry-wrapper">
-        <div class="telemetry-header-row">
-          <span class="telemetry-heading">Live Telemetry & Safety Wire</span>
-          <span id="action-count-pill" class="badge-mini">0 Redacted</span>
+      <!-- Live Execution Telemetry -->
+      <div class="terminal-shell">
+        <div class="terminal-header">
+          <div class="terminal-dots">
+            <span class="dot dot-r"></span>
+            <span class="dot dot-y"></span>
+            <span class="dot dot-g"></span>
+          </div>
+          <span class="terminal-title">LIVE TELEMETRY STREAM</span>
+          <span id="masked-counter" class="terminal-badge">READY</span>
         </div>
-        <div id="telemetry-log" class="telemetry-terminal">
-          Awaiting command. Open an active tab and click "Mask Sensitive PII" or "Run Netra Agent".
+        <div id="telemetry-log" class="terminal-body">
+          <div class="log-row">
+            <span class="log-prefix">&gt;</span>
+            <span class="log-text">Netra agent standing by on active browser window.</span>
+          </div>
         </div>
       </div>
-    </main>
+    </div>
 
-    <!-- Footer -->
-    <footer class="ext-footer">
-      <span>Smart India Hackathon 2026 • ISRO Autonomous Web Perception</span>
+    <!-- Footer Security Notice -->
+    <footer class="agent-footer">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      <span>Client-Side Local Vision • Zero Raw Pixels Exported</span>
     </footer>
   </div>
 

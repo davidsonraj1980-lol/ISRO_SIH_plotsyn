@@ -9,69 +9,75 @@ document.addEventListener('DOMContentLoaded', () => {
   const telemetryLog = document.getElementById('telemetry-log');
   const redactionMode = document.getElementById('redaction-mode');
   const agentGoal = document.getElementById('agent-goal');
-  const actionCountPill = document.getElementById('action-count-pill');
-  const shieldStatusText = document.getElementById('shield-status-text');
+  const maskedCounter = document.getElementById('masked-counter');
+  const agentStateLabel = document.getElementById('agent-state-label');
 
-  function log(msg, type = 'info') {
-    const colorClass = type === 'success' ? 'log-success' : type === 'warn' ? 'log-warn' : type === 'error' ? 'log-err' : 'log-arrow';
-    telemetryLog.innerHTML = `<div class="log-line"><span class="${colorClass}">&gt;</span> <span>${msg}</span></div>`;
+  function clearLog() {
+    telemetryLog.innerHTML = '';
   }
 
-  function appendLog(msg, type = 'info') {
-    const colorClass = type === 'success' ? 'log-success' : type === 'warn' ? 'log-warn' : type === 'error' ? 'log-err' : 'log-arrow';
-    telemetryLog.innerHTML += `<div class="log-line"><span class="${colorClass}">&gt;</span> <span>${msg}</span></div>`;
+  function addLog(text, type = 'info') {
+    const row = document.createElement('div');
+    row.className = 'log-row';
+
+    const prefix = document.createElement('span');
+    prefix.className = type === 'success' ? 'log-success' : type === 'warn' ? 'log-warn' : type === 'error' ? 'log-error' : 'log-prefix';
+    prefix.innerText = type === 'success' ? '✓' : type === 'error' ? '✗' : '>';
+
+    const msg = document.createElement('span');
+    msg.className = type === 'success' ? 'log-text log-success' : type === 'error' ? 'log-text log-error' : 'log-text';
+    msg.innerText = text;
+
+    row.appendChild(prefix);
+    row.appendChild(msg);
+    telemetryLog.appendChild(row);
     telemetryLog.scrollTop = telemetryLog.scrollHeight;
   }
 
-  // Ensure content script is injected on the tab
-  async function getActiveTabAndEnsureContentScript() {
+  // Ensure content script is available in the target tab
+  async function resolveTargetTab() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab?.id) {
-      log('No active browser tab found.', 'error');
+      addLog('No active browser tab found.', 'error');
       return null;
     }
 
     const url = tab.url || '';
-    if (url.startsWith('chrome://') || url.startsWith('chrome-extension://') || url.startsWith('about:') || url.startsWith('edge://')) {
-      log('Browser security prevents extensions from running on internal pages. Please switch to a webpage (e.g. http://localhost:5174/) to test.', 'warn');
+    if (url.startsWith('chrome://') || url.startsWith('chrome-extension://') || url.startsWith('edge://') || url.startsWith('about:')) {
+      addLog('Browser restriction: Extensions cannot run on internal system pages. Switch to an active webpage (e.g. http://localhost:5174/).', 'warn');
       return null;
     }
 
     try {
-      // Test if content script responds
       await new Promise((resolve, reject) => {
         chrome.tabs.sendMessage(tab.id, { action: 'PING' }, (res) => {
           if (chrome.runtime.lastError || !res) {
-            // Need injection
             chrome.scripting.executeScript({
               target: { tabId: tab.id },
               files: ['content.js']
             }, () => {
-              if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
-              } else {
-                resolve(true);
-              }
+              if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
+              else resolve(true);
             });
           } else {
             resolve(true);
           }
         });
       });
+      return tab;
     } catch (e) {
-      log('Could not inject content script: ' + (e.message || e), 'error');
+      addLog('Could not initialize page listener: ' + (e.message || e), 'error');
       return null;
     }
-
-    return tab;
   }
 
   // 1. Scan and Mask PII
   btnScanPii.addEventListener('click', async () => {
-    log('Scanning active page DOM and biometrics...');
+    clearLog();
+    addLog('Scanning DOM for sensitive credentials & biometrics...');
     btnScanPii.disabled = true;
 
-    const tab = await getActiveTabAndEnsureContentScript();
+    const tab = await resolveTargetTab();
     if (!tab) {
       btnScanPii.disabled = false;
       return;
@@ -80,13 +86,14 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.tabs.sendMessage(tab.id, { action: 'SCAN_PII', mode: redactionMode.value }, (response) => {
       btnScanPii.disabled = false;
       if (chrome.runtime.lastError) {
-        log('Connection error: ' + chrome.runtime.lastError.message, 'error');
+        addLog('Connection error: ' + chrome.runtime.lastError.message, 'error');
         return;
       }
 
       const count = response?.count || 0;
-      actionCountPill.innerText = `${count} Masked`;
-      log(`Detected and masked ${count} sensitive fields (Aadhaar, passwords, biometrics) with zero plain-text leaks.`, 'success');
+      maskedCounter.innerText = `${count} MASKED`;
+      addLog(`Detected ${count} sensitive fields (Aadhaar, passwords, biometrics).`, 'info');
+      addLog(`Applied "${redactionMode.value.toUpperCase()}" filter with zero plain-text leaks.`, 'success');
     });
   });
 
@@ -94,32 +101,37 @@ document.addEventListener('DOMContentLoaded', () => {
   btnRunAgent.addEventListener('click', async () => {
     const goal = agentGoal.value.trim();
     if (!goal) {
-      log('Please enter a mission directive.', 'warn');
+      addLog('Please enter an agent directive.', 'warn');
       return;
     }
 
-    log('Dispatching Netra Vision Agent on active tab...');
+    clearLog();
+    addLog('Engaging Netra on-device vision agent...');
+    agentStateLabel.innerText = 'EXECUTING';
     btnRunAgent.disabled = true;
 
-    const tab = await getActiveTabAndEnsureContentScript();
+    const tab = await resolveTargetTab();
     if (!tab) {
       btnRunAgent.disabled = false;
+      agentStateLabel.innerText = 'ARMED';
       return;
     }
 
-    appendLog('Performing on-device visual grounding & privacy filter...');
+    addLog('Running on-device WebGPU visual perception filter...');
 
     chrome.tabs.sendMessage(tab.id, { action: 'RUN_AGENT', goal, mode: redactionMode.value }, (response) => {
       btnRunAgent.disabled = false;
+      agentStateLabel.innerText = 'ARMED';
+
       if (chrome.runtime.lastError) {
-        log('Error executing agent: ' + chrome.runtime.lastError.message, 'error');
+        addLog('Agent execution error: ' + chrome.runtime.lastError.message, 'error');
         return;
       }
 
       const count = response?.entitiesCount || 0;
-      actionCountPill.innerText = `${count} Masked`;
-      appendLog(`Redacted ${count} sensitive visual zones prior to VLM dispatch.`, 'info');
-      appendLog(`Successfully executed target browser clearance action on page!`, 'success');
+      maskedCounter.innerText = `${count} MASKED`;
+      addLog(`Redacted ${count} sensitive visual elements before reasoning.`, 'info');
+      addLog(`Target clearance action executed successfully!`, 'success');
     });
   });
 });
