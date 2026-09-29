@@ -5,6 +5,7 @@
 
 (() => {
   let detectedEntities = [];
+  let currentMode = 'gaussian_blur';
 
   // 1. DOM PII Detection Engine
   function scanDomForPii() {
@@ -25,16 +26,16 @@
         label = 'PASSWORD / PIN';
       } else if (name.includes('aadhaar') || /\b\d{4}\s\d{4}\s\d{4}\b/.test(val)) {
         kind = 'aadhaar';
-        label = 'AADHAAR / SSN';
+        label = 'AADHAAR NUMBER';
       } else if (name.includes('card') || /\b(?:\d{4}[ -]?){3}\d{4}\b/.test(val)) {
         kind = 'credit_card';
-        label = 'FINANCIAL / CARD';
+        label = 'FINANCIAL CARD';
       } else if (type === 'email' || name.includes('email')) {
         kind = 'email';
         label = 'EMAIL ADDRESS';
       } else if (type === 'tel' || name.includes('phone') || name.includes('mobile')) {
         kind = 'phone';
-        label = 'TELEPHONE / MOBILE';
+        label = 'TELEPHONE NUMBER';
       }
 
       if (kind) {
@@ -76,11 +77,49 @@
     return sensitive;
   }
 
-  // 2. Clean Institutional Privacy Shield Overlay (Zero Neon Cyberpunk Slop)
+  // 2. Real Gaussian Blurring & Precision Privacy Shield Overlay
   function renderShieldOverlays(entities, mode) {
-    document.querySelectorAll('.netra-extension-overlay').forEach(el => el.remove());
+    currentMode = mode || 'gaussian_blur';
 
-    entities.forEach(item => {
+    // 2a. Reset previous filters on underlying elements
+    document.querySelectorAll('.netra-masked-element').forEach((el) => {
+      el.classList.remove('netra-masked-element');
+      el.style.filter = el.dataset.netraOriginalFilter || '';
+      el.style.webkitFilter = el.dataset.netraOriginalFilter || '';
+      el.style.userSelect = '';
+      delete el.dataset.netraOriginalFilter;
+    });
+
+    // Remove existing overlays
+    document.querySelectorAll('.netra-extension-overlay').forEach((el) => el.remove());
+
+    entities.forEach((item) => {
+      const targetEl = item.element;
+
+      // 2b. Apply REAL visual filter directly onto the target element
+      if (targetEl) {
+        targetEl.dataset.netraOriginalFilter = targetEl.style.filter || '';
+        targetEl.classList.add('netra-masked-element');
+        targetEl.style.userSelect = 'none';
+
+        if (mode === 'gaussian_blur') {
+          // Direct, unmistakable Gaussian Blur on element
+          const blurAmount = item.type === 'biometric' ? '14px' : '9px';
+          targetEl.style.filter = `blur(${blurAmount})`;
+          targetEl.style.webkitFilter = `blur(${blurAmount})`;
+        } else if (mode === 'pixelate') {
+          targetEl.style.filter = 'blur(4px) contrast(300%)';
+          targetEl.style.webkitFilter = 'blur(4px) contrast(300%)';
+        } else if (mode === 'blackout') {
+          targetEl.style.filter = 'brightness(0) contrast(200%)';
+          targetEl.style.webkitFilter = 'brightness(0) contrast(200%)';
+        } else if (mode === 'synthetic_token') {
+          targetEl.style.filter = 'blur(6px)';
+          targetEl.style.webkitFilter = 'blur(6px)';
+        }
+      }
+
+      // 2c. Create high-visibility institutional overlay badge
       const overlay = document.createElement('div');
       overlay.className = 'netra-extension-overlay';
       overlay.style.position = 'absolute';
@@ -95,25 +134,32 @@
       overlay.style.alignItems = 'center';
       overlay.style.justifyContent = 'center';
       overlay.style.overflow = 'hidden';
+      overlay.style.transition = 'all 0.2s ease';
 
       if (mode === 'gaussian_blur') {
         overlay.style.backdropFilter = 'blur(16px)';
-        overlay.style.background = 'rgba(15, 23, 42, 0.45)';
-        overlay.style.border = '1px solid rgba(148, 163, 184, 0.6)';
-        overlay.innerHTML = `<span style="font-family: -apple-system, sans-serif; font-size: 10px; font-weight: 600; color: #f8fafc; background: rgba(15, 23, 42, 0.7); padding: 1px 6px; border-radius: 3px;">BLURRED</span>`;
+        overlay.style.webkitBackdropFilter = 'blur(16px)';
+        overlay.style.background = 'rgba(11, 37, 69, 0.25)';
+        overlay.style.border = '1.5px solid rgba(56, 189, 248, 0.85)';
+        overlay.innerHTML = `
+          <div style="font-family: 'JetBrains Mono', Consolas, monospace; font-size: 10px; font-weight: 700; color: #38bdf8; background: rgba(11, 24, 44, 0.9); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.5); letter-spacing: 0.04em; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.4);">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>BLURRED: ${item.label}</span>
+          </div>`;
       } else if (mode === 'pixelate') {
-        overlay.style.background = 'repeating-linear-gradient(45deg, #1e293b, #1e293b 6px, #0f172a 6px, #0f172a 12px)';
-        overlay.style.border = '1px solid #475569';
-        overlay.innerHTML = `<span style="font-family: -apple-system, sans-serif; font-size: 10px; font-weight: 600; color: #94a3b8; background: #0f172a; padding: 1px 6px; border-radius: 3px;">PIXELATED</span>`;
+        overlay.style.background = 'repeating-linear-gradient(45deg, rgba(30,41,59,0.7), rgba(30,41,59,0.7) 6px, rgba(15,23,42,0.85) 6px, rgba(15,23,42,0.85) 12px)';
+        overlay.style.border = '1.5px solid #64748b';
+        overlay.innerHTML = `<span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; color: #f1f5f9; background: #1e293b; padding: 3px 8px; border-radius: 4px; border: 1px solid #475569; letter-spacing: 0.04em;">PIXELATED: ${item.label}</span>`;
       } else if (mode === 'synthetic_token') {
-        overlay.style.background = '#f1f5f9';
-        overlay.style.border = '1px dashed #64748b';
-        overlay.innerHTML = `<span style="font-family: monospace; font-size: 11px; font-weight: 600; color: #0284c7;">[SYNTHETIC_DECOY]</span>`;
+        overlay.style.background = 'rgba(241, 245, 249, 0.9)';
+        overlay.style.border = '1.5px dashed #0284c7';
+        const hash = Math.abs(item.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0));
+        overlay.innerHTML = `<span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; color: #0284c7; background: #ffffff; padding: 3px 8px; border-radius: 4px; border: 1px solid #0284c7;">[TOKEN_${hash % 9000 + 1000}]</span>`;
       } else {
-        // Solid Blackout (Default)
-        overlay.style.background = '#0f172a';
-        overlay.style.border = '1px solid #334155';
-        overlay.innerHTML = `<span style="font-family: -apple-system, sans-serif; font-size: 10px; font-weight: 600; color: #86efac; background: #14532d; padding: 1px 6px; border-radius: 3px;">MASKED: ${item.label}</span>`;
+        // Solid Blackout
+        overlay.style.background = '#060a12';
+        overlay.style.border = '1.5px solid #334155';
+        overlay.innerHTML = `<span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; color: #86efac; background: #14532d; padding: 3px 8px; border-radius: 4px; border: 1px solid #16a34a; letter-spacing: 0.04em;">MASKED: ${item.label}</span>`;
       }
 
       document.body.appendChild(overlay);
@@ -160,14 +206,24 @@
 
     if (request.action === 'SCAN_PII') {
       const found = scanDomForPii();
-      renderShieldOverlays(found, request.mode || 'blackout');
+      renderShieldOverlays(found, request.mode || currentMode);
       sendResponse({ count: found.length });
+      return;
+    }
+
+    if (request.action === 'CHANGE_MODE') {
+      currentMode = request.mode;
+      if (detectedEntities.length === 0) {
+        scanDomForPii();
+      }
+      renderShieldOverlays(detectedEntities, currentMode);
+      sendResponse({ count: detectedEntities.length });
       return;
     }
 
     if (request.action === 'RUN_AGENT') {
       const found = scanDomForPii();
-      renderShieldOverlays(found, request.mode || 'blackout');
+      renderShieldOverlays(found, request.mode || currentMode);
 
       executeActionOnPage(request.goal).then(success => {
         sendResponse({ 

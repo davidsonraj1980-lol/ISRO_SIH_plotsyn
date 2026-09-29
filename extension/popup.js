@@ -186,4 +186,16 @@ document.addEventListener('DOMContentLoaded', () => {
       addLog(`Target clearance action executed successfully!`, 'success');
     });
   });
+
+  // 3. Real-time Filter Mode Switcher
+  redactionMode.addEventListener('change', async () => {
+    const tab = await resolveTargetTab();
+    if (!tab) return;
+    chrome.tabs.sendMessage(tab.id, { action: 'CHANGE_MODE', mode: redactionMode.value }, (response) => {
+      if (chrome.runtime.lastError) return;
+      const count = response?.count || 0;
+      maskedCounter.innerText = `${count} MASKED`;
+      addLog(`Active privacy filter switched to "${redactionMode.value.toUpperCase()}".`, 'info');
+    });
+  });
 });
