@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "ISRO NetraVision • On-Device Privacy Agent",
+  "version": "1.0.0",
+  "description": "ISRO PS-26171: On-device visual perception and client-side PII redaction for lightweight browser agents.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "NetraVision ISRO Agent"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

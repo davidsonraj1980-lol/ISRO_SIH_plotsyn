@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NetraVision ISRO Agent</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="comet-popup">
+    <!-- Header -->
+    <div class="popup-header">
+      <div class="header-brand">
+        <div class="orb-avatar">⚡</div>
+        <div>
+          <div class="popup-title">NETRA ASSISTANT</div>
+          <div class="popup-dept">ISRO PS-26171 • PRIVACY GUARD</div>
+        </div>
+      </div>
+      <div class="status-indicator">
+        <span class="dot-online"></span>
+        <span>ARMED</span>
+      </div>
+    </div>
+
+    <!-- Active Shield Stats -->
+    <div class="shield-banner">
+      <div class="shield-stat">
+        <span class="label">Hardware ViT</span>
+        <span class="val highlight">WebGPU (16ms)</span>
+      </div>
+      <div class="shield-stat">
+        <span class="label">Outbound Leak</span>
+        <span class="val zero-leak">0.00% (VERIFIED)</span>
+      </div>
+    </div>
+
+    <!-- Redaction Mode Selector -->
+    <div class="field-section">
+      <label class="section-label">ON-DEVICE REDACTION FILTER</label>
+      <select id="redaction-mode" class="mode-select">
+        <option value="blackout">Cryptographic Blackout (Recommended)</option>
+        <option value="gaussian_blur">Quantum Gaussian Blur</option>
+        <option value="pixelate">20px Mosaic Pixelation</option>
+        <option value="synthetic_token">Synthetic Token Replacement</option>
+      </select>
+    </div>
+
+    <!-- Prompt / Goal Input -->
+    <div class="field-section">
+      <label class="section-label">MISSION AGENT PROMPT</label>
+      <input 
+        type="text" 
+        id="agent-goal" 
+        class="goal-input" 
+        placeholder="e.g. Find and click Authorize Telemetry..."
+        value="Acknowledge protocol and authorize clearance decree"
+      />
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button id="btn-scan-pii" class="btn-secondary">
+        <span>🛡️ Scan Sensitive PII</span>
+      </button>
+      <button id="btn-run-agent" class="btn-primary">
+        <span>⚡ Run Netra Agent</span>
+      </button>
+    </div>
+
+    <!-- Live Telemetry Log -->
+    <div class="telemetry-box">
+      <div class="telemetry-header">LIVE AGENT TELEMETRY</div>
+      <div id="telemetry-log" class="telemetry-log">
+        Netra Assistant ready on active browser tab.
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
